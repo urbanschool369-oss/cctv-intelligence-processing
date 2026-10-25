@@ -519,7 +519,41 @@ Each entry: date/time CT, what, evidence (file / commit / link), checked, still 
   VERDICT-PHASE2.md, docs/00-sequence-trace.md. data/, .venv/,
   yolov8s.pt excluded by .gitignore.
 
-## 031 — PENDING — Sync Phase 2 to GitHub (needs Shekar's word) + Mac pull
+## 031 — 2026-10-25, ~08:01 CT — GitHub sync trace:005 DONE (Phase 2)
+- Shekar tapped "Sync Phase 2 to GitHub now".
+- Pushed 6 files, scan clean, no data/.venv/weights: app/main.py,
+  app/db.py, tests/test_phase2.py, BUILD-REPORT-PHASE2.md,
+  VERDICT-PHASE2.md, docs/00-sequence-trace.md.
+- New commit on main, verified by reading BUILD-REPORT-PHASE2.md
+  back from GitHub: 8212e686da43d5e349ce4aec1f82aacc2d4aca2d.
+  Remote head before push was 27df9d4, matched sync record.
+- Mac clone now behind GitHub again (trace:005 not yet pulled).
+
+## 032 — 2026-10-25, ~08:02 CT — Mac pull VERIFIED (trace:005)
+- Shekar: "done" (git pull on Mac). Verified: BUILD-REPORT-PHASE2.md
+  (3,176 bytes) and VERDICT-PHASE2.md (1,056 bytes) present, updated
+  2026-10-25T13:02:45Z, tests/ folder present. Mac clone matches
+  GitHub main 8212e68 in content checked.
+
+## 033 — 2026-10-25, ~08:04 CT — Phase 3 BUILT + VERDICT GO (VM, synthetic only)
+- Shekar tapped "Start Phase 3 summaries now".
+- Built: GET /summaries (seconds or ISO windows, ISO converted
+  per video via recording_start, unknown starts excluded + named),
+  counts by class, event_ids, evidence links, coverage with
+  gaps/errors, empty-window text that does NOT claim nothing
+  happened, candidate-not-verified wording. No LLM call in Phase 3.
+- Tests PASS: test_phase2 regression + test_phase3 (2 events,
+  bus 1, person 1, 25 obs; ISO 18:00-19:00 same; empty window 0
+  events + coverage text; unknown camera no_footage). Live server
+  port 8003, stopped after test, health phase 3.
+- Verdict Phase 3: GO (VERDICT-PHASE3.md), synthetic only, NOT a
+  ship approval. Minor open: named 6h/24h presets not separate
+  parameters; custom ranges cover the windows.
+- Files to sync next: app/main.py, tests/test_phase3.py,
+  BUILD-REPORT-PHASE3.md, VERDICT-PHASE3.md,
+  docs/00-sequence-trace.md.
+
+## 034 — PENDING — Sync Phase 3 to GitHub (needs Shekar's word) + Mac pull
 - To be filled when the browser handoff arrives: thread link, original scope summary,
   top-5 MVP features verbatim in summary, PRD/requirements, open questions.
 - Then: copy to `docs/02-prd.md`, commit as `trace: 004 - PRD from ChatGPT thread`.

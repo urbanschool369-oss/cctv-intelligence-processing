@@ -20,6 +20,7 @@ precision/recall; 0.25 is not approved as the product default.
 import json
 import shutil
 import uuid
+from datetime import datetime, timezone as dt_timezone
 from pathlib import Path
 
 import cv2
@@ -36,7 +37,7 @@ SAMPLING_FPS = 1.0
 TEST_CONFIDENCE = 0.25
 GAP_THRESHOLD_SECONDS = 30.0
 
-app = FastAPI(title="CCTV Intelligence Processing — Phase 2")
+app = FastAPI(title="CCTV Intelligence Processing — Phase 3")
 init_db()
 _model = None
 
@@ -134,7 +135,7 @@ def video_row(row):
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "phase": 2, "model": MODEL_NAME, "sampling_fps": SAMPLING_FPS,
+    return {"status": "ok", "phase": 3, "model": MODEL_NAME, "sampling_fps": SAMPLING_FPS,
             "gap_threshold_seconds": GAP_THRESHOLD_SECONDS}
 
 
@@ -202,6 +203,143 @@ def get_evidence(evidence_id: str):
         raise HTTPException(404, {"evidence_status": "unavailable",
                                   "detail": "Evidence frame not available for this id"})
     return FileResponse(frame_path, media_type="image/jpeg")
+
+
+@app.get("/summaries")
+def get_summaries(camera_id: str = "", start: str = "", end: str = ""):
+    """6h / 24h / custom-window summary, computed from indexed events only.
+
+    start/end may be video-offset seconds (e.g. "0", "21600") or ISO
+    datetimes with an offset (e.g. "2026-06-12T18:00:00-05:00").
+    ISO windows are converted to video offsets per video, using that
+    video's recording_start; a video with no reliable recording_start
+    is excluded from an ISO window and named in coverage, never
+    silently assumed. Timestamp + coverage are validated first:
+    an empty window with no footage is reported as no coverage, NOT
+    as "nothing happened". All events here are candidates, not
+    user-verified incidents.
+    """
+    # Parse window: seconds, ISO, or empty (all time).
+    def parse_window(value):
+        if not value:
+            return None
+        try:
+            return ("seconds", float(value))
+        except ValueError:
+            pass
+        try:
+            dt = datetime.fromisoformat(value)
+            if dt.tzinfo is None:
+                raise HTTPException(400, "ISO start/end must carry a UTC offset")
+            return ("iso", dt)
+        except HTTPException:
+            raise
+        except ValueError:
+            raise HTTPException(400, f"Unparsable start/end: {value}")
+
+    start_w = parse_window(start)
+    end_w = parse_window(end)
+
+    def offsets_for_video(video):
+        """Return (start_seconds, end_seconds) window for this video, or None if excluded."""
+        if start_w is None and end_w is None:
+            return (None, None)
+        if start_w and start_w[0] == "seconds" or end_w and end_w[0] == "seconds":
+            s = start_w[1] if start_w and start_w[0] == "seconds" else None
+            e = end_w[1] if end_w and end_w[0] == "seconds" else None
+            return (s, e)
+        # ISO window: need recording_start.
+        if not video["recording_start"]:
+            return None
+        try:
+            rec = datetime.fromisoformat(video["recording_start"])
+        except ValueError:
+            return None
+        s = (start_w[1] - rec).total_seconds() if start_w else None
+        e = (end_w[1] - rec).total_seconds() if end_w else None
+        return (s, e)
+
+    with connect() as conn:
+        videos = conn.execute(
+            "SELECT * FROM videos" + (" WHERE camera_id=?" if camera_id else ""),
+            ([camera_id] if camera_id else []),
+        ).fetchall()
+        events = []
+        excluded_videos = []
+        coverage_videos = []
+        for video in videos:
+            window = offsets_for_video(video)
+            if window is None:
+                excluded_videos.append(video["id"])
+                continue
+            s, e = window
+            query = "SELECT * FROM events WHERE video_id=?"
+            params = [video["id"]]
+            if s is not None:
+                query += " AND end_seconds>=?"
+                params.append(s)
+            if e is not None:
+                query += " AND start_seconds<=?"
+                params.append(e)
+            query += " ORDER BY start_seconds, id"
+            rows = conn.execute(query, params).fetchall()
+            events.extend(event_row(r) for r in rows)
+            try:
+                cov = json.loads(video["coverage"])
+            except (ValueError, TypeError):
+                cov = {}
+            coverage_videos.append({
+                "video_id": video["id"], "camera_id": video["camera_id"],
+                "analysis_status": video["analysis_status"],
+                "duration_seconds": video["duration_seconds"],
+                "processed_seconds": cov.get("processed_seconds"),
+                "gaps": cov.get("gaps", []), "errors": cov.get("errors", []),
+            })
+    counts = {}
+    total_obs = 0
+    for ev in events:
+        counts[ev["event_type"]] = counts.get(ev["event_type"], 0) + 1
+        total_obs += int(ev["observation_count"])
+    event_ids = [ev["id"] for ev in events]
+    if events:
+        summary_text = (
+            f"Candidate events in this window: {len(events)} event(s), "
+            f"{total_obs} observation(s). By class: "
+            + ", ".join(f"{k} {v}" for k, v in sorted(counts.items()))
+            + ". These are candidate groupings from local detection, "
+            "not user-verified incidents. See event_ids for evidence."
+        )
+    else:
+        summary_text = (
+            "No candidate events indexed in this window. This does NOT "
+            "mean nothing happened: see coverage below for footage and "
+            "analysis gaps in this window."
+        )
+    if excluded_videos:
+        summary_text += (
+            " Coverage note: video(s) excluded from an ISO window because "
+            "no reliable recording_start exists: " + ", ".join(excluded_videos) + "."
+        )
+    return {
+        "id": f"SUM-{camera_id or 'all'}-{start or 'all'}-{end or 'all'}",
+        "period_start": start or None,
+        "period_end": end or None,
+        "camera_filter": camera_id or None,
+        "summary_text": summary_text,
+        "event_count": len(events),
+        "observation_count": total_obs,
+        "counts_by_class": counts,
+        "event_ids": event_ids,
+        "events": events,
+        "coverage": {
+            "videos": coverage_videos,
+            "excluded_videos_no_recording_start": excluded_videos,
+            "coverage_status": "covered" if coverage_videos else "no_footage",
+        },
+        "model_version": MODEL_NAME,
+        "created_at": datetime.now(dt_timezone.utc).isoformat(),
+        "note": "Detections are distinguished from user-verified incidents.",
+    }
 
 
 @app.post("/videos")
