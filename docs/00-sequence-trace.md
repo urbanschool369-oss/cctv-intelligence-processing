@@ -488,7 +488,38 @@ Each entry: date/time CT, what, evidence (file / commit / link), checked, still 
   public-repo note added. Frozen spec v0.1 NOT edited.
 - These two files to be synced as trace:004 (see next step).
 
-## 029 — PENDING — Sync public-repo fixes (trace:004) + Phase 2 build start word
+## 029 — 2026-10-25, ~07:58 CT — Mac pull VERIFIED (trace:004)
+- Shekar: "done" (git pull on Mac). Verified by reading Mac folder:
+  files updated 2026-10-25T12:58:01Z, PHASE2-CLAUDE-BRIEF.md
+  (1,954 bytes), VERDICT-PHASE1.md (1,926 bytes), README.md
+  (4,342 bytes), BUILD-REPORT.md (3,805 bytes), and
+  spec/phase2-decisions.md read back in full — 30-second gap
+  decision present. Mac clone now matches GitHub main 27df9d4
+  (trace:004) in content checked.
+- Mac pull attempt by Mitra via VS Code earlier failed (terminal
+  keyboard focus unavailable, Open Folder dialog not switchable);
+  Shekar's own Terminal pull is what succeeded.
+
+## 030 — 2026-10-25, ~07:59 CT — Phase 2 BUILT + VERDICT GO (VM, synthetic only)
+- Shekar: "proceed" after Mac pull verified. Build in Mitra's VM
+  workspace (shell/venv/test data live there; Mac Terminal cannot
+  be driven by Mitra, so no Mac-side Claude Code CLI run — stated
+  plainly in BUILD-REPORT-PHASE2.md, Mac re-run remains separate).
+- Built: events table, 30s gap grouping (idempotent, auto after
+  successful analyze), GET /events (filters), GET /events/{id}
+  (+detections, evidence_status), GET /evidence/{id} (frame or
+  explicit unavailable), health phase 2.
+- Tests PASS: tests/test_phase2.py (3 events, 28s merge, 40s split,
+  filters, detail, evidence-unavailable); live server port 8002
+  (stopped after test) CAM-01 -> bus 0-4s/5 obs, person 0-4s/20 obs.
+- Verdict Phase 2: GO (VERDICT-PHASE2.md), synthetic only, NOT a
+  merge/staging/production/publish approval.
+- Files to sync next: app/main.py, app/db.py,
+  tests/test_phase2.py, BUILD-REPORT-PHASE2.md,
+  VERDICT-PHASE2.md, docs/00-sequence-trace.md. data/, .venv/,
+  yolov8s.pt excluded by .gitignore.
+
+## 031 — PENDING — Sync Phase 2 to GitHub (needs Shekar's word) + Mac pull
 - To be filled when the browser handoff arrives: thread link, original scope summary,
   top-5 MVP features verbatim in summary, PRD/requirements, open questions.
 - Then: copy to `docs/02-prd.md`, commit as `trace: 004 - PRD from ChatGPT thread`.

@@ -1,8 +1,9 @@
 # Author: Shekar Kaki
-"""SQLite storage for CCTV Intelligence Processing MVP, Phase 1.
+"""SQLite storage for CCTV Intelligence Processing MVP, Phases 1-2.
 
 Tables follow frozen spec v0.1 (spec/architecture.md, PRD section 8).
-Phase 1 stores Video + Detection only. Event grouping is Phase 2.
+Phase 1 stores Video + Detection. Phase 2 adds Event (candidate
+groupings only, never verified incidents).
 """
 import sqlite3
 from pathlib import Path
@@ -41,6 +42,18 @@ def init_db():
                 confidence REAL NOT NULL,
                 bounding_box TEXT NOT NULL,
                 frame_reference TEXT NOT NULL
+            );
+            CREATE TABLE IF NOT EXISTS events (
+                id TEXT PRIMARY KEY,
+                video_id TEXT NOT NULL REFERENCES videos(id),
+                camera_id TEXT NOT NULL,
+                event_type TEXT NOT NULL,
+                start_seconds REAL NOT NULL,
+                end_seconds REAL NOT NULL,
+                observation_count INTEGER NOT NULL,
+                max_confidence REAL NOT NULL,
+                evidence_reference TEXT,
+                review_status TEXT NOT NULL
             );
             """
         )
