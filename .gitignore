@@ -1,0 +1,12 @@
+.env
+.env.*
+*.key
+*.pem
+*.mp4
+*.mov
+*.avi
+__pycache__/
+node_modules/
+.next/
+dist/
+.DS_Store
