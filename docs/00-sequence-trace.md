@@ -389,7 +389,71 @@ Each entry: date/time CT, what, evidence (file / commit / link), checked, still 
   Work/Cowork again unless he explicitly changes the rule.
 - Applies to all future Mac ChatGPT/Claude work, not just CCTV.
 
-## 022 — PENDING — Claude auth + gap threshold + project on Mac → Phase 2
+## 022 — 2026-10-25, ~06:12 CT — GitHub sync DONE, Mac clone BLOCKED on approval
+- Shekar tapped "Sync the project to GitHub, then clone it on the Mac".
+- GitHub push via MCP push_files (approved): 24 UTF-8 files, no binary,
+  no deletions, no secrets. New commit 6f652d400f76137b6f163ea1d2b7c26de897c72c
+  on main, message "trace: 002 - sync spec freeze v0.1, wireframes,
+  Phase 1 build report and code". Verified: list_commits head = that SHA,
+  spec/SPEC-PACKET.md on GitHub starts "FROZEN 2026-10-25".
+  Sync record saved adjacent to workspace (not in repo).
+  Excluded from sync (by design): .venv, data/, testdata/, yolov8s.pt.
+- Mac clone attempt: Mac session cc-57 started, Terminal open_app
+  control approval TIMED OUT (user on iOS, not at Mac to answer),
+  nothing was done on the Mac, no clone created. Do NOT retry on own
+  — report timeout and ask whether to try again.
+- Next: Shekar says try again (new approval, at Mac) OR clones himself:
+  git clone https://github.com/urbanschool369-oss/cctv-intelligence-processing.git
+  ~/Documents/cctv-intelligence-processing
+  Then: Claude auth check, gap threshold, Phase 2.
+
+## 023 — 2026-10-25, ~06:19 CT — Mac clone retry BLOCKED (Terminal + VS Code terminal)
+- Shekar tapped "Try the Mac clone again now" (now on Mac device).
+- Terminal open_app: app_blocked — 'Terminal' isn't available for
+  computer control, cannot be opened by Mitra. Do not suggest unblocking.
+- VS Code fallback: Code activated (berd-workspace, Terminal 1 zsh
+  focused via Ctrl+`), but typing the git clone command into the
+  terminal textfield failed: text_input_unavailable, no text sent.
+  Also, Shekar was actively using Claude desktop at the same time
+  (context pack paste), and focus kept returning to Claude, so further
+  focus-switching was stopped to avoid disrupting his work.
+- Result: NO clone created on the Mac by Mitra. GitHub sync (commit
+  6f652d4) stands. Cleanest next step: Shekar runs the one clone
+  command himself in his own Terminal, or tells Mitra a different
+  route (e.g. Finder / VS Code Source Control clone UI).
+
+## 024 — 2026-10-25, ~06:26 CT — Berd team SET UP in Mitra's workspace
+- Shekar: "will you setup Berd as well in your space? create team as planned".
+- Done in ~/workspace/berd-workspace/: TEAM.md (roster, gates, honest
+  scope note: Berd desktop app is NOT running in the VM; team here is
+  files + rules, mirrored on the Mac), Forge redefined to Spec Architect
+  for dev work (04-forge-systems-builder.md, original builder role kept
+  for non-dev), Verdict dev checklist added (06-verdict-evaluator.md),
+  tasks/04-cctv-phase2.md (Atlas plan + blockers).
+- Mirrored to Mac: ~/Documents/berd-workspace/TEAM.md (2,193 bytes).
+- Limitation stated plainly: VM team runs via Mitra/subagents, model
+  is Muse, not Goose/NVIDIA (Mac agents are z-ai/glm-5.3-flash).
+
+## 025 — 2026-10-25, ~07:25 CT — Mac clone VERIFIED, Claude sign-in done by Shekar
+- Shekar: "I did 1,2" (clone + Claude sign-in check). Verified on Mac:
+  ~/Documents/cctv-intelligence-processing exists, created
+  2026-10-25T12:21:12Z, with README.md, BUILD-REPORT.md, CLAUDE.md,
+  app/, docs/, spec/ (SPEC-PACKET.md, api-contract.md,
+  architecture.md, acceptance-tests.md, never-do.md).
+- Remaining blocker: gap threshold decision (explained to Shekar
+  2026-10-25 ~07:25 CT, proposed 30s starting value for his approval).
+
+## 026 — 2026-10-25, ~07:26 CT — Gap threshold APPROVED (30s, Phase 2)
+- Shekar tapped "Approve 30 seconds as the gap threshold for Phase 2".
+- Recorded in spec/phase2-decisions.md (frozen v0.1 NOT edited).
+- Verdict Phase 1: GO WITH FIXES (VERDICT-PHASE1.md) — Phase 1 exit
+  met on synthetic input only; fixes applied as BUILD-REPORT addendum
+  (route + GitHub commit 6f652d4 + gap decision now current).
+- Phase 2 Claude brief prepared: PHASE2-CLAUDE-BRIEF.md (ready, NOT
+  started). Next move needs Shekar's separate word: sync to GitHub
+  (then he pulls on Mac) and/or start Phase 2 build.
+
+## 027 — PENDING — Phase 2 start word (sync and/or build)
 - To be filled when the browser handoff arrives: thread link, original scope summary,
   top-5 MVP features verbatim in summary, PRD/requirements, open questions.
 - Then: copy to `docs/02-prd.md`, commit as `trace: 004 - PRD from ChatGPT thread`.

@@ -50,6 +50,20 @@ source video." — MET by the test above, on synthetic test input.
 This is NOT a claim about real CCTV accuracy, and NOT the full
 10-item acceptance set (those are Phase 5 / full-demo checks).
 
+## Addendum — 2026-10-25 (Verdict fix, history above untouched)
+- Route decision: Berd + Claude Code team route, chosen by Shekar
+  2026-10-25. Phase 1 above was a direct build; later phases use
+  the team route.
+- GitHub sync: done 2026-10-25, commit
+  6f652d400f76137b6f163ea1d2b7c26de897c72c (private repo
+  urbanschool369-oss/cctv-intelligence-processing). The "not done"
+  line above is superseded by this addendum.
+- Gap threshold: DECIDED 30 seconds for Phase 2 (Shekar, 2026-10-25),
+  recorded in spec/phase2-decisions.md. The "still TBD" line above
+  for gap threshold is superseded; other TBDs remain open.
+- Mac clone verified 2026-10-25 ~07:25 CT; Claude Code sign-in
+  check done by Shekar on the Mac.
+
 ## Known limits / open items
 - Exact YOLO model now decided (yolov8s); still TBD: sampling rate
   for 24h footage, gap threshold, confidence threshold, frontend.
