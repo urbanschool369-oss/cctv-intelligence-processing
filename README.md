@@ -2,8 +2,10 @@
 
 Author: Shekar Kaki
 
-Status: PRE-PRODUCTION. Design and PRD phase only, 2026-10-25.
-No product code, no camera access, no production deploy yet.
+Status: PUBLIC repo (made public by Shekar 2026-10-25).
+PRE-PRODUCTION. Spec frozen v0.1, Phase 1 built and tested on
+synthetic input only, Phase 2 (event evidence + timeline) pending.
+No camera access, no production deploy yet.
 
 ## What this is
 A service built from Shekar's existing ChatGPT thread "CCTV Intelligence Processing".
@@ -62,9 +64,16 @@ Git history is the second trace. Each commit is one step, with a message startin
 - Never overwrite a delivered file in place. Write v2, v3, and note what changed.
 
 ## Next steps, in order
-1. ChatGPT thread result: top-5 MVP features + PRD requirements (in progress, browser task).
-2. Copy that result into `docs/02-prd.md` with source, date, and thread link.
-3. Shekar approves PRD, or names fixes.
-4. Claude Design wireframes for the MVP screens, approved by Shekar.
-5. Freeze spec packet (PRD + architecture + API contract + acceptance tests).
-6. Build phase only after spec freeze, in the Berd front-door / Claude engine flow.
+1. Phase 2: event evidence + timeline, gap threshold 30 seconds
+   (see spec/phase2-decisions.md and PHASE2-CLAUDE-BRIEF.md).
+2. Phase 2 Verdict gate, then Shekar's separate word per ship move.
+3. Phases 3–4: summaries, then evidence-grounded assistant.
+4. Phase 5: full 10-item acceptance set on a manually reviewed test set.
+
+## Public-repo note
+This repo is public. Nothing in it contains secrets, API keys,
+camera credentials, RTSP URLs, phone numbers, email addresses,
+client or employer names, real footage, or faces. Model weights
+(yolov8s.pt), virtualenvs, local data, and test videos are
+git-ignored and never committed. If a future file would contain
+any of those, do not commit it — stop and ask Shekar first.

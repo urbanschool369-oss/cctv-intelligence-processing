@@ -453,7 +453,42 @@ Each entry: date/time CT, what, evidence (file / commit / link), checked, still 
   started). Next move needs Shekar's separate word: sync to GitHub
   (then he pulls on Mac) and/or start Phase 2 build.
 
-## 027 — PENDING — Phase 2 start word (sync and/or build)
+## 027 — 2026-10-25, ~07:27 CT — GitHub sync trace:003 DONE
+- Shekar tapped "Sync Phase 2 decisions and brief to GitHub now".
+- Pushed 5 files (no secrets, no binaries, no deletions): 
+  spec/phase2-decisions.md, VERDICT-PHASE1.md,
+  PHASE2-CLAUDE-BRIEF.md, BUILD-REPORT.md (addendum),
+  docs/00-sequence-trace.md.
+- New commit on main, verified: 
+  529be014ebe20742e113389a581a529317a9d05c, message
+  "trace: 003 - Phase 2 decisions (30s gap), Verdict Phase 1,
+  Claude brief, updated trace and build report".
+  Remote head before push was 6f652d4, matched sync record.
+  phase2-decisions.md read back from GitHub at that SHA, starts
+  "Gap threshold — DECIDED 2026-10-25 ~07:26 CT, 30 seconds".
+- Mac clone is now BEHIND GitHub: Shekar needs git pull on the Mac
+  to get trace:003 before running Claude Code there.
+
+## 028 — 2026-10-25, ~07:45 CT — Repo made PUBLIC by Shekar, audit + fixes done
+- Shekar: "Now, its public repo. do whatever required".
+- Verified via GitHub API: private=false, visibility=public,
+  https://github.com/urbanschool369-oss/cctv-intelligence-processing
+  (was private at creation 2026-10-25, now public on his word).
+- Audit of all repo files (local copy + GitHub search): NO phone,
+  NO email addresses, NO API keys, NO camera credentials, NO RTSP
+  URLs, NO client/employer names, NO real footage/faces. Matches
+  on "password"/"secret" are policy wording only, not values.
+  yolov8s.pt (22M, local only) is NOT on GitHub (search 0 results).
+- Required fix found: .gitignore did NOT list .venv/, data/,
+  testdata/, or *.pt — a Mac git push could have committed weights
+  or a venv to a now-public repo. .gitignore strengthened to
+  include .venv/, venv/, data/, testdata/, *.pt, *.db, *.sqlite*.
+- README updated: status now PUBLIC + Phase 1 done / Phase 2
+  pending, outdated "design phase only, no code" line removed,
+  public-repo note added. Frozen spec v0.1 NOT edited.
+- These two files to be synced as trace:004 (see next step).
+
+## 029 — PENDING — Sync public-repo fixes (trace:004) + Phase 2 build start word
 - To be filled when the browser handoff arrives: thread link, original scope summary,
   top-5 MVP features verbatim in summary, PRD/requirements, open questions.
 - Then: copy to `docs/02-prd.md`, commit as `trace: 004 - PRD from ChatGPT thread`.

@@ -5,7 +5,15 @@
 *.mp4
 *.mov
 *.avi
+*.pt
+*.db
+*.sqlite
+*.sqlite3
 __pycache__/
+.venv/
+venv/
+data/
+testdata/
 node_modules/
 .next/
 dist/
