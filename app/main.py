@@ -38,7 +38,7 @@ SAMPLING_FPS = 1.0
 TEST_CONFIDENCE = 0.25
 GAP_THRESHOLD_SECONDS = 30.0
 
-app = FastAPI(title="CCTV Intelligence Processing — Phase 4")
+app = FastAPI(title="CCTV Intelligence Processing — Phase 5")
 init_db()
 _model = None
 
@@ -255,7 +255,7 @@ def assistant_ask(body: AssistantAsk):
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "phase": 4, "model": MODEL_NAME, "sampling_fps": SAMPLING_FPS,
+    return {"status": "ok", "phase": 5, "model": MODEL_NAME, "sampling_fps": SAMPLING_FPS,
             "gap_threshold_seconds": GAP_THRESHOLD_SECONDS}
 
 
@@ -529,6 +529,19 @@ def analyze_video(video_id: str):
         conn.execute("UPDATE videos SET analysis_status='running' WHERE id=?", (video_id,))
     model = get_model()
     cap = cv2.VideoCapture(row["stored_path"])
+    if not cap.isOpened():
+        # Phase 5 fix: an unreadable source must be a FAILED job,
+        # never a complete job with zero detections.
+        coverage = {"processed_seconds": 0, "sampled_frames": 0,
+                    "gaps": [], "errors": ["Unreadable video file at analyze time"]}
+        with connect() as conn:
+            conn.execute(
+                "UPDATE videos SET analysis_status=?, coverage=? WHERE id=?",
+                ("failed", json.dumps(coverage), video_id),
+            )
+        return {"id": video_id, "analysis_status": "failed", "sampled_frames": 0,
+                "detections": 0, "events": 0,
+                "errors": ["Unreadable video file at analyze time"]}
     src_fps = cap.get(cv2.CAP_PROP_FPS) or 30
     step = max(1, round(src_fps / SAMPLING_FPS))
     ev_dir = EVIDENCE / row["camera_id"] / video_id

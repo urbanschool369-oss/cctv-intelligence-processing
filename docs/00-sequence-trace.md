@@ -588,7 +588,59 @@ Each entry: date/time CT, what, evidence (file / commit / link), checked, still 
   BUILD-REPORT-PHASE4.md, VERDICT-PHASE4.md,
   docs/00-sequence-trace.md.
 
-## 037 — PENDING — Sync Phase 4 to GitHub (needs Shekar's word) + Mac pull
+## 037 — 2026-10-25, ~08:43 CT — GitHub sync trace:007 DONE (Phase 4)
+- Shekar tapped "Sync Phase 4 to GitHub now".
+- Pushed 5 files, scan clean: app/main.py, tests/test_phase4.py,
+  BUILD-REPORT-PHASE4.md, VERDICT-PHASE4.md,
+  docs/00-sequence-trace.md.
+- New commit on main, verified by reading VERDICT-PHASE4.md back:
+  27a3cc24d3136e31d63fbba2ca5f00a62aa12727. Remote head before
+  push was a037dcd, matched sync record.
+- Mac clone now behind GitHub again (trace:007 not yet pulled).
+
+## 038 — 2026-10-25, ~08:52 CT — Mac pull VERIFIED (trace:007)
+- Shekar: "pulled". Verified: BUILD-REPORT-PHASE4.md
+  (2,765 bytes) and VERDICT-PHASE4.md (867 bytes) present,
+  updated 2026-10-25T13:51:55Z, app/ and tests/ updated.
+  Mac clone matches GitHub main 27a3cc2 in content checked.
+
+## 039 — 2026-10-25, ~10:17 CT — Phase 5 pilot PAUSED on Shekar's word
+- Shekar, in options-confirmation mode ("ask questions as options
+  for confirmation. I will authorize you"): tapped "Wait for real
+  test footage before Phase 5 pilot".
+- Meaning: Phase 5 pilot does NOT run to completion on synthetic
+  data only. The 10-item checklist, precision/recall per class,
+  and any accuracy claim wait for a manually reviewed real test
+  set from Shekar. Synthetic runs so far remain test evidence
+  only, not pilot acceptance.
+- Phase 5 fix already made locally (unreadable video at analyze
+  time now returns failed, not complete) — NOT synced yet, will
+  be synced only on Shekar's separate word.
+- Next decisions to ask as options, one by one: frontend choice,
+  24h sampling rate, confidence threshold (after observed
+  precision/recall), Should items (export, correct/dismiss).
+
+## 040 — 2026-10-25, ~11:05 CT — Frontend DECIDED: React dashboard
+- Shekar tapped "Frontend: React dashboard" (options-confirmation
+  mode). This fills the frontend TBD for the UI phase (after
+  Phase 5 pilot, or as a separate UI build — NOT started yet on
+  this tap alone; starting the UI build needs a separate word).
+- Phase 5 pilot still paused awaiting real test footage.
+
+## 041 — 2026-10-25, ~11:06 CT — 24h sampling DECIDED: 0.2 fps
+- Shekar tapped "24h sampling: 0.2 fps, every 5 seconds".
+  Recorded in spec/phase2-decisions.md. Trade-off recorded:
+  17,280 frames/day, brief events under 5s may be missed.
+- Phase 5 pilot still paused awaiting real test footage.
+
+## 042 — 2026-10-25, ~11:17 CT — Should items INCLUDED in Phase 5
+- Shekar tapped "Include export and correct/dismiss in Phase 5".
+  FR-12 export + FR-13 correct/dismiss are now in Phase 5 scope.
+  Export format and correct/dismiss UX are still open — to be
+  specified before building them, not guessed.
+- Phase 5 pilot still paused awaiting real test footage.
+
+## 043 — PENDING — Real test footage + sync decision for Phase 5 fix/decisions
 - To be filled when the browser handoff arrives: thread link, original scope summary,
   top-5 MVP features verbatim in summary, PRD/requirements, open questions.
 - Then: copy to `docs/02-prd.md`, commit as `trace: 004 - PRD from ChatGPT thread`.
