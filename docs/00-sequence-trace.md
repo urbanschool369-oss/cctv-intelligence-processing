@@ -553,7 +553,42 @@ Each entry: date/time CT, what, evidence (file / commit / link), checked, still 
   BUILD-REPORT-PHASE3.md, VERDICT-PHASE3.md,
   docs/00-sequence-trace.md.
 
-## 034 — PENDING — Sync Phase 3 to GitHub (needs Shekar's word) + Mac pull
+## 034 — 2026-10-25, ~08:26 CT — GitHub sync trace:006 DONE (Phase 3)
+- Shekar tapped "Sync Phase 3 to GitHub now".
+- Pushed 5 files, scan clean: app/main.py, tests/test_phase3.py,
+  BUILD-REPORT-PHASE3.md, VERDICT-PHASE3.md,
+  docs/00-sequence-trace.md.
+- New commit on main, verified by reading VERDICT-PHASE3.md back:
+  a037dcdde14ff9d45fe7846a0d97d17c8f3f5836. Remote head before
+  push was 8212e68, matched sync record.
+- Mac clone now behind GitHub again (trace:006 not yet pulled).
+
+## 035 — 2026-10-25, ~08:27 CT — Mac pull VERIFIED (trace:006)
+- Shekar: "Pulled". Verified: BUILD-REPORT-PHASE3.md
+  (2,726 bytes) and VERDICT-PHASE3.md (882 bytes) present,
+  updated 2026-10-25T13:27:15Z, app/ and tests/ updated.
+  Mac clone matches GitHub main a037dcd in content checked.
+
+## 036 — 2026-10-25, ~08:30 CT — Phase 4 BUILT + VERDICT GO (VM, synthetic only)
+- Shekar: "continue next" (Phase 4, after Phase 3 pull verified).
+- Built: POST /assistant/ask (question, camera_ids, seconds
+  time window). Queries event DB first, then template answer
+  over indexed events only — NO LLM call in this build, so no
+  invention possible. Theft/intent questions get "cannot
+  establish theft/trespass/intent" + observations for review.
+  No-match -> "insufficient evidence". Empty question -> 400.
+- Tests PASS: test_phase2 + test_phase3 regressions +
+  test_phase4 (grounded counts, class filter, theft rule,
+  insufficient evidence). Live server port 8004, stopped after
+  test, health phase 4, POST 200 OK.
+- Verdict Phase 4: GO (VERDICT-PHASE4.md), synthetic only, NOT a
+  ship approval. Open: template answers not LLM prose, assistant
+  ISO windows not converted (seconds only).
+- Files to sync next: app/main.py, tests/test_phase4.py,
+  BUILD-REPORT-PHASE4.md, VERDICT-PHASE4.md,
+  docs/00-sequence-trace.md.
+
+## 037 — PENDING — Sync Phase 4 to GitHub (needs Shekar's word) + Mac pull
 - To be filled when the browser handoff arrives: thread link, original scope summary,
   top-5 MVP features verbatim in summary, PRD/requirements, open questions.
 - Then: copy to `docs/02-prd.md`, commit as `trace: 004 - PRD from ChatGPT thread`.

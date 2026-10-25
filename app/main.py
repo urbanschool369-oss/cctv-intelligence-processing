@@ -26,6 +26,7 @@ from pathlib import Path
 import cv2
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse
+from pydantic import BaseModel
 
 from .db import DB_PATH, connect, init_db
 
@@ -37,7 +38,7 @@ SAMPLING_FPS = 1.0
 TEST_CONFIDENCE = 0.25
 GAP_THRESHOLD_SECONDS = 30.0
 
-app = FastAPI(title="CCTV Intelligence Processing — Phase 3")
+app = FastAPI(title="CCTV Intelligence Processing — Phase 4")
 init_db()
 _model = None
 
@@ -133,9 +134,128 @@ def video_row(row):
     return dict(row) if row else None
 
 
+class AssistantAsk(BaseModel):
+    question: str
+    camera_ids: list = []
+    start: str = ""
+    end: str = ""
+
+
+@app.post("/assistant/ask")
+def assistant_ask(body: AssistantAsk):
+    """Evidence-grounded assistant, Phase 4. Queries the event DB FIRST.
+
+    No LLM call in this build: the answer is a template over indexed
+    events only, so it cannot invent identities, intent, theft,
+    timestamps, counts, or evidence. If the question asks about theft,
+    trespass, or intent, the answer states detections alone cannot
+    establish that, and offers the observations for human review.
+    If no indexed events match, the answer states insufficient
+    evidence. Coverage limitations are always included.
+    """
+    question = (body.question or "").strip()
+    if not question:
+        raise HTTPException(400, "question is required")
+    q_lower = question.lower()
+    # Theft / intent questions: hard rule, never label from detections.
+    theft_words = ["steal", "stole", "theft", "thief", "trespass", "intruder",
+                   "break in", "breaking in", "burglar"]
+    theft_asked = any(w in q_lower for w in theft_words)
+    # Class filter from the question itself, only classes actually indexed.
+    known_classes = ["person", "vehicle", "bus", "car", "truck", "dog", "cat",
+                     "horse", "cow", "bird"]
+    asked_classes = [c for c in known_classes if c in q_lower]
+    with connect() as conn:
+        query = "SELECT * FROM events WHERE 1=1"
+        params = []
+        if body.camera_ids:
+            query += " AND camera_id IN (%s)" % ",".join("?" * len(body.camera_ids))
+            params.extend(body.camera_ids)
+        if asked_classes:
+            query += " AND event_type IN (%s)" % ",".join("?" * len(asked_classes))
+            params.extend(asked_classes)
+        # Time window, when given as video-offset seconds.
+        try:
+            s_val = float(body.start) if body.start else None
+        except ValueError:
+            s_val = None
+        try:
+            e_val = float(body.end) if body.end else None
+        except ValueError:
+            e_val = None
+        if s_val is not None:
+            query += " AND end_seconds>=?"
+            params.append(s_val)
+        if e_val is not None:
+            query += " AND start_seconds<=?"
+            params.append(e_val)
+        query += " ORDER BY start_seconds, id"
+        rows = conn.execute(query, params).fetchall()
+        events = [event_row(r) for r in rows]
+        videos = conn.execute("SELECT id, camera_id, analysis_status FROM videos").fetchall()
+    counts = {}
+    total_obs = 0
+    for ev in events:
+        counts[ev["event_type"]] = counts.get(ev["event_type"], 0) + 1
+        total_obs += int(ev["observation_count"])
+    event_ids = [ev["id"] for ev in events]
+    timestamps = [(ev["id"], ev["start_seconds"], ev["end_seconds"]) for ev in events]
+    evidence = [(ev["id"], ev["evidence_reference"]) for ev in events if ev["evidence_reference"]]
+    coverage = {
+        "videos_indexed": len(videos),
+        "video_ids": [v["id"] for v in videos],
+        "limitations": "Answers use indexed candidate events only. "
+        "No footage, no analysis, or a window outside the indexed videos "
+        "means insufficient evidence, not proof nothing happened.",
+    }
+    if theft_asked:
+        answer = (
+            "Detections alone cannot establish theft, trespass, or intent. "
+            "What the indexed events show is candidate detections only, "
+            "for human review. "
+        )
+        if events:
+            answer += (
+                f"In the indexed data there are {len(events)} matching "
+                f"candidate event(s), {total_obs} observation(s), by class: "
+                + ", ".join(f"{k} {v}" for k, v in sorted(counts.items()))
+                + ". See event_ids and timestamps for the observations "
+                "themselves; what any person was doing is not in the data."
+            )
+        else:
+            answer += "No matching indexed events were found, so there is insufficient evidence to answer further."
+    elif not events:
+        answer = (
+            "Insufficient evidence: no candidate events indexed match this "
+            "question in the current data. This does not mean nothing "
+            "happened; it means the indexed footage does not cover it, "
+            "or no matching detection was recorded."
+        )
+    else:
+        answer = (
+            f"From indexed candidate events only: {len(events)} event(s), "
+            f"{total_obs} observation(s). By class: "
+            + ", ".join(f"{k} {v}" for k, v in sorted(counts.items()))
+            + ". These are candidate detections, not user-verified "
+            "incidents, and they do not say what anyone was doing."
+        )
+    return {
+        "answer": answer,
+        "question": question,
+        "period_covered": {"start": body.start or None, "end": body.end or None,
+                           "camera_ids": body.camera_ids or None},
+        "event_ids": event_ids,
+        "timestamps": timestamps,
+        "evidence": evidence,
+        "counts_by_class": counts,
+        "coverage": coverage,
+        "model": "template-over-indexed-events (no LLM call in Phase 4 build)",
+    }
+
+
 @app.get("/health")
 def health():
-    return {"status": "ok", "phase": 3, "model": MODEL_NAME, "sampling_fps": SAMPLING_FPS,
+    return {"status": "ok", "phase": 4, "model": MODEL_NAME, "sampling_fps": SAMPLING_FPS,
             "gap_threshold_seconds": GAP_THRESHOLD_SECONDS}
 
 
