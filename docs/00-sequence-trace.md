@@ -640,7 +640,51 @@ Each entry: date/time CT, what, evidence (file / commit / link), checked, still 
   specified before building them, not guessed.
 - Phase 5 pilot still paused awaiting real test footage.
 
-## 043 — PENDING — Real test footage + sync decision for Phase 5 fix/decisions
+## 043 — 2026-10-25, ~11:18 CT — GitHub sync trace:008 DONE (Phase 5 decisions + fix)
+- Shekar tapped "Sync Phase 5 decisions and failed-job fix to GitHub now".
+- Pushed 3 files, scan clean: app/main.py (failed-job fix,
+  phase 5 title), spec/phase2-decisions.md (frontend React,
+  24h 0.2 fps, Should items, pilot paused), docs/00-sequence-trace.md.
+- New commit on main, verified by reading phase2-decisions.md
+  back: b5b7d63605cb5af36f25053c06ffc8dd00672b5a. Remote head
+  before push was 27a3cc2, matched sync record.
+- Mac clone now behind GitHub again (trace:008 not yet pulled).
+
+## 044 — 2026-10-25, ~11:19 CT — Mac pull VERIFIED (trace:008)
+- Shekar: "pulled". Verified by reading Mac
+  spec/phase2-decisions.md in full: frontend React, 24h 0.2 fps,
+  Should items included, pilot paused — all present. Mac clone
+  matches GitHub main b5b7d63 in content checked.
+- Minor note: that file still contains a stale line under
+  "Other Phase 2 inputs" saying frontend is API only / TBD —
+  superseded by the Later decisions section above it, to be
+  cleaned up in a later edit, not a pull failure.
+
+## 045 — 2026-10-25, ~11:22 CT — Public-dataset pilot DONE (VIRAT sample)
+- Shekar: "can you research sample footage dataset publicly
+  available to use. make the use case complete".
+- Research: VIRAT (best fit, static surveillance, person+vehicle),
+  ShanghaiTech, UCF-Crime (NOT used — theft/intent conflict),
+  TSBOW traffic, farm animal sources SideCow-VSS / CBVD-5 /
+  cow_plos (not run yet). Full research in
+  docs/04-public-dataset-pilot.md.
+- Pilot clip: VIRAT_S_010204_05_000856_000890.mp4, 24.36s,
+  720p, CAM-VIRAT, id 9143355fd0b1, recording start UNKNOWN
+  (relative timestamps used). Analyze: complete, 25 frames,
+  233 detections, 4 events, errors []. Person 220 obs, potted
+  plant 10, backpack 2, chair 1 (chair = likely false positive,
+  no chair in frame 0017). Manual review of frames 0000/0017
+  confirms plaza crowd ~8-10 people. Server stopped after.
+- Footage NOT committed (data/ git-ignored). 10-item checklist
+  in pilot doc: several PASS, several PARTIAL, offline test
+  NOT tested, precision/recall NOT claimed. Phase 5 pilot with
+  Shekar's real footage remains open; this public pilot does
+  NOT replace it, it completes the use case on public video.
+- Files to sync next: docs/04-public-dataset-pilot.md,
+  docs/00-sequence-trace.md (plus the Phase 5 fix files if not
+  already synced — trace:008 already synced app/main.py).
+
+## 046 — PENDING — Sync public-dataset pilot report (needs Shekar's word)
 - To be filled when the browser handoff arrives: thread link, original scope summary,
   top-5 MVP features verbatim in summary, PRD/requirements, open questions.
 - Then: copy to `docs/02-prd.md`, commit as `trace: 004 - PRD from ChatGPT thread`.
